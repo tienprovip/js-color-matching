@@ -18,7 +18,8 @@ function handleTimerChange(second) {
 function handleTimerFinish() {
     // end game
     gameStatus = GAME_STATUS.FINISHED;
-    setTimerText('YOU LOSE')
+    setTimerText('YOU LOSE');
+    showPlayAgainButton();
 }
 
 // TODOs
