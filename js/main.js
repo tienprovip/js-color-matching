@@ -1,6 +1,6 @@
 import { GAME_STATUS, PAIRS_COUNT } from './constants.js'
-import { getColorElementList, getColorListElement, getInActiveColorList } from './selectors.js';
-import { getRandomColorPairs } from './utils.js'
+import { getColorBackground, getColorElementList, getColorListElement, getInActiveColorList, getPlayAgainButton } from './selectors.js';
+import { getRandomColorPairs, hidePlayAgainButton, setTimerText, showPlayAgainButton } from './utils.js'
 
 // Global variables
 let selections = []
@@ -15,7 +15,8 @@ let gameStatus = GAME_STATUS.PLAYING
 
 function handleColorClick(liElement) {
     const shouldBlockClick = [GAME_STATUS.BLOCKING, GAME_STATUS.FINISHED].includes(gameStatus);
-    if (!liElement || shouldBlockClick) return;
+    const isClicked = liElement.classList.contains('active');
+    if (!liElement || isClicked || shouldBlockClick) return;
 
     // show color for clicked cell
     liElement.classList.add('active');
@@ -32,12 +33,14 @@ function handleColorClick(liElement) {
         const isWin = getInActiveColorList().length === 0;
         if (isWin) {
             // show replace
-            const replaceButton = document.getElementsByClassName('game__button');
-            if (!replaceButton) return;
-            replaceButton.classList.add('show')
-                // show You WIN
-        }
+            showPlayAgainButton();
+            // show You WIN
+            setTimerText('YOU WIN!');
 
+            gameStatus = GAME_STATUS.FINISHED;
+        }
+        const colorBackground = getColorBackground();
+        colorBackground.style.backgroundColor = secondColor;
         selections = [];
         return;
     }
@@ -83,8 +86,35 @@ function attachEventForColorList() {
         handleColorClick(event.target);
     })
 }
+
+function resetGame() {
+    // reset global vars
+    gameStatus = GAME_STATUS.PLAYING;
+    selections = [];
+
+    // reset DOM elements
+    // -remove active class from li
+    // -hide replay button
+    // -clear you win / timeout text
+    const colorElementList = getColorElementList();
+    for (const colorElement of colorElementList) {
+        colorElement.classList.remove('active');
+    }
+    hidePlayAgainButton();
+    setTimerText('');
+
+    // re-generate new colors
+    initColors();
+}
+
+function attachEventForPlayAgainButton() {
+    const playAgainButton = getPlayAgainButton();
+    if (!playAgainButton) return;
+    playAgainButton.addEventListener('click', resetGame);
+}
 // main
 (() => {
     initColors();
     attachEventForColorList();
+    attachEventForPlayAgainButton();
 })()
