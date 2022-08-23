@@ -1,6 +1,6 @@
 import { GAME_STATUS, GAME_TIME, PAIRS_COUNT } from './constants.js'
 import { getColorBackground, getColorElementList, getColorListElement, getInActiveColorList, getPlayAgainButton } from './selectors.js';
-import { createTimer, getRandomColorPairs, hidePlayAgainButton, setTimerText, showPlayAgainButton } from './utils.js'
+import { createTimer, getRandomColorPairs, hidePlayAgainButton, setBackGroundColor, setTimerText, showPlayAgainButton } from './utils.js'
 
 // Global variables
 let selections = []
@@ -55,8 +55,7 @@ function handleColorClick(liElement) {
             timer.clear();
             gameStatus = GAME_STATUS.FINISHED;
         }
-        const colorBackground = getColorBackground();
-        colorBackground.style.backgroundColor = secondColor;
+        setBackGroundColor(secondColor);
         selections = [];
         return;
     }
@@ -118,6 +117,7 @@ function resetGame() {
     }
     hidePlayAgainButton();
     setTimerText('');
+    setBackGroundColor('goldenrod');
 
     // re-generate new colors
     initColors();
